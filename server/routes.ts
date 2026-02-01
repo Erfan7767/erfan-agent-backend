@@ -38,7 +38,7 @@ export async function registerRoutes(
     target: 'http://127.0.0.1:8000',
     changeOrigin: true,
     ws: true,
-    logLevel: 'silent' # Reduce noise
+    logLevel: 'silent' // Reduce noise
   });
 
   app.use('/ws', pythonProxy);

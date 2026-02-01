@@ -33,14 +33,16 @@ def python_interpreter(code: str):
     Use this tool to run calculations, data analysis, or any python script.
     Input should be valid python code.
     """
-    # In a real implementation with E2B:
-    # from e2b_code_interpreter import CodeInterpreter
-    # with CodeInterpreter() as sandbox:
-    #     execution = sandbox.notebook.exec_cell(code)
-    #     return execution.text or execution.results
-    
-    # Fallback/Mock for blueprint generation if E2B key is missing:
-    return f"Executed code: {code}\n(E2B Execution Mock - Key required)"
+    try:
+        from e2b_code_interpreter import CodeInterpreter
+        print(f"Executing code in E2B sandbox: {code}")
+        with CodeInterpreter() as sandbox:
+            execution = sandbox.notebook.exec_cell(code)
+            if execution.error:
+                return f"Error: {execution.error.name}: {execution.error.value}\nTraceback: {execution.error.traceback}"
+            return execution.text or str(execution.results)
+    except Exception as e:
+        return f"Error executing code: {str(e)}"
 
 tools = [tavily_tool, python_interpreter]
 
