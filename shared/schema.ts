@@ -1,18 +1,20 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-});
+// WebSocket Event Types
+export const WS_EVENTS = {
+  USER_MESSAGE: 'user_message',
+  AGENT_EVENT: 'agent_event',
+} as const;
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-});
+// Types for the Agent events coming from Python
+export type AgentEvent = 
+  | { type: 'token'; content: string }
+  | { type: 'tool_start'; tool: string; input: string }
+  | { type: 'tool_end'; tool: string; output: string }
+  | { type: 'agent_end'; output: string }
+  | { type: 'error'; error: string };
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type WsMessage = {
+  type: string;
+  data: AgentEvent;
+};
